@@ -9,7 +9,7 @@ class GroupEventsController < ApplicationController
   def create
     @group_event = GroupEvent.new(group_event_params)
     @group_event.save
-    render :json => JSON.pretty_generate(@group_event), :status => 201
+    render :json => @group_event, :status => 201
   end
 
   # GET /group_events/:id
@@ -27,7 +27,7 @@ class GroupEventsController < ApplicationController
     @group_event = GroupEvent.find(params[:id])
     @group_event.update_attributes(group_event_params)
     @group_event.save
-    render :json => JSON.pretty_generate(@group_event), :status => 204
+    render :json => @group_event, :status => 204
   end
 
   # DELETE /group_events/:id

@@ -4,7 +4,7 @@ class GroupEvent < ApplicationRecord
   attribute :state, :string, default: "draft"
   validate :dates_must_be_valid, :state_must_be_draft_or_published
   after_save :update_duration
-  # default_scope :
+  scope :published, { where(state: "published") }
 
   # Validates all attributes before publishing
   def no_nil_attributes
@@ -16,21 +16,21 @@ class GroupEvent < ApplicationRecord
     end
   end
 
-  def publish
-    if no_nil_attributes
-      state = "published"
-      self.save!
-    else
-      raise PublishingError, 'All fields are required to publish an event'
-    end
-  end
-
   def state_must_be_draft_or_published
     if @@states.include?(state)
       return true
     else
       errors.add(:state, "The state must be draft or published")
       return false
+    end
+  end
+
+  def publish
+    if no_nil_attributes
+      state = "published"
+      self.save!
+    else
+      raise PublishingError, 'All fields are required to publish an event'
     end
   end
 
