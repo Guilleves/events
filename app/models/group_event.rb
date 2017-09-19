@@ -1,9 +1,41 @@
 class GroupEvent < ApplicationRecord
   include ActiveModel::AttributeAssignment
+  @@states = [ "draft", "published" ]
+  attribute :state, :string, default: "draft"
+  validate :dates_must_be_valid, :state_must_be_draft_or_published
+  after_save :update_duration
+  # default_scope :
 
-  validate :dates_must_be_valid
+  # Validates all attributes before publishing
+  def no_nil_attributes
+    GroupEvent.attribute_names.each do |a|
+      if self[:"#{a}"].blank?
+        errors.add(:base, "All fields are required to publish an event")
+        return false
+      end
+    end
+  end
 
-  def all_fields_must_be_completed_before_publishing
+  def publish
+    if no_nil_attributes
+      state = "published"
+      self.save!
+    else
+      raise PublishingError, 'All fields are required to publish an event'
+    end
+  end
+
+  def state_must_be_draft_or_published
+    if @@states.include?(state)
+      return true
+    else
+      errors.add(:state, "The state must be draft or published")
+      return false
+    end
+  end
+
+  def update_duration
+    self[:duration] = (date_to - date_from).to_i
   end
 
   def dates_must_be_valid
