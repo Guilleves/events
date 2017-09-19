@@ -1,45 +1,46 @@
 class GroupEventsController < ApplicationController
-  # before_action :set_todo, only: [:show, :update, :destroy]
-
-  # GET /todos
+  # GET /group_events
   def index
     @group_events = GroupEvent.all
     render :json => @group_events, :status => 200
-    # render json: Project.where('owner_id = ?', @user.id)
-    # json_response(@todos)
   end
 
-  # POST /todos
+  # POST /group_events
   def create
-    @group_event = GroupEvent.new(params[:group_event])
+    @group_event = GroupEvent.new(group_event_params)
     @group_event.save
     render :json => @group_event, :status => 201
   end
 
-  # GET /todos/:id
+  # GET /group_events/:id
   def show
     @group_event = GroupEvent.find(params[:id])
     if @group_event
       render json: @group_event, :status => 200
     else
-      render json: {"message":"Event not found"}, :status => 404
+      render json: {"message": "Event not found"}, :status => 404
     end
   end
 
-  # PUT /todos/:id
+  # PUT /group_events/:id
   def update
     @group_event = GroupEvent.find(params[:id])
-    @group_event.update_attributes(params[:group_event])
+    @group_event.update_attributes(group_event_params)
     @group_event.save
     render :json => @group_event, :status => 204
   end
 
-  # DELETE /todos/:id
+  # DELETE /group_events/:id
   def destroy
     @group_event = GroupEvent.find(params[:id])
     if @group_event.destroy
       render json: {"message": "Deleted successfully"}, :status => 204
     end
   end
+
+  private
+    def group_event_params
+      params.require(:group_event).permit(:name, :description, :date_from, :date_to, location: [ :city, :zip_code, :address ])
+    end
 
 end
