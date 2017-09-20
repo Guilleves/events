@@ -2,6 +2,6 @@ language: ruby
 rvm:
   - 2.3
 before_install:
-  - rvm gemset use whitespectre
+  - rvm gemset use whitespectre --create
   - gem install bundler
   - bundle install
