@@ -20,8 +20,7 @@ development:
   database: events_development
   pool: 5
   host: localhost
-  username: guille
-  password: root
+  username: postgres
   timeout: 5000
 
   # Connect on a TCP socket. Omitted by default since the client uses a
@@ -51,6 +50,5 @@ test:
   database: events_test
   pool: 5
   host: localhost
-  username: guille
-  password: root
+  username: postgres
   timeout: 5000
