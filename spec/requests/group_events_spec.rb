@@ -105,9 +105,9 @@ RSpec.describe 'Group events API', type: :request do
     it 'returns status code 204 (performs soft delete)' do
       expect(response).to have_http_status(204)
     end
-    it "the record still exists and has deleted: true" do
+    it "the record still exists and deleted is not nil" do
       ge = GroupEvent.find(group_event_id)
-      expect(ge[:deleted]).to eq true
+      expect(ge[:deleted]).not_to be nil
     end
   end
 end

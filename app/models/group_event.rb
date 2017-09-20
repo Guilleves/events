@@ -5,8 +5,14 @@ class GroupEvent < ApplicationRecord
   attribute :state, :string, default: "draft"
   validate :dates_must_be_valid, :state_must_be_draft_or_published
   after_save :update_duration
-  # scope :published, where(state: "published")
+  scope :published, -> { where(:state => "published") }
   scope :active, -> { where(:deleted => nil) }
+
+  class << self
+    def published_active
+      active.published
+    end
+  end
 
   # Override to perform soft deletes
   def delete

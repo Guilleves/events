@@ -6,9 +6,8 @@ class GroupEventsController < ApplicationController
   end
 
   def published
-    debugger
-    @group_event = GroupEvent.published.all
-    @group_event.publish_event
+    @group_events = GroupEvent.published_active.all
+    render :json => JSON.pretty_generate(@group_events.as_json), :status => 200
   end
 
   # POST /group_events
@@ -24,7 +23,11 @@ class GroupEventsController < ApplicationController
 
   def publish
     @group_event = GroupEvent.find(params[:id])
-    @group_event.publish_event
+    if @group_event.publish_event
+      redirect_to  action: "show", id: params[:id], :status => 204
+    else
+      render json:{ "message": @group_event.errors.messages }, :status => 400
+    end
   end
 
   # GET /group_events/:id
@@ -57,7 +60,7 @@ class GroupEventsController < ApplicationController
 
   private
     def group_event_params
-      params.require(:group_event).permit(:name, :description, :date_from, :date_to, location: [ :city, :zip_code, :address ])
+      params.require(:group_event).permit(:name, :description, :date_from, :date_to, :duration, location: [ :city, :zip_code, :address ])
     end
 
 end
