@@ -23,7 +23,7 @@ group :development do
 end
 
 group :test do
-  gem 'factory_girl_rails'
+  gem 'factory_girl_rails', :require => false
   gem 'faker', :git => 'git://github.com/stympy/faker.git', :branch => 'master'
   gem 'cucumber-rails', :require => false
   gem 'database_cleaner'
