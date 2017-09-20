@@ -25,8 +25,6 @@ end
 
 group :test do
   gem 'faker', :git => 'git://github.com/stympy/faker.git', :branch => 'master'
-  gem 'cucumber'
-  gem 'cucumber-rails', :require => false
   gem 'database_cleaner'
 end
 
