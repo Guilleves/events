@@ -10,5 +10,5 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "CREATE USER guille WITH PASSWORD 'root';" -U postgres
-  - psql -c "CREATE DATABASE events_test;" -U guille 
+  - psql -c "CREATE DATABASE events_test;" -U guille
+  - rake db:migrate
