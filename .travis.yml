@@ -9,6 +9,11 @@ before_install:
 services:
   - postgresql
 
+test:
+  adapter: postgresql
+  database: events_test
+
 before_script:
-  - psql -c "CREATE DATABASE events_test;" -U guille
+  - psql -c "CREATE DATABASE events_test;" -U postgres
+  - rake db:test:prepare
   - rake db:migrate
