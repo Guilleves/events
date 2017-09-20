@@ -3,5 +3,9 @@ rvm:
   - 2.3
 before_install:
   - rvm gemset use whitespectre --create
-  - gem install bundler
+  - gem install bundler --pre
   - bundle install
+
+script:
+  - rake db:test:prepare
+  - rake db:migrate
