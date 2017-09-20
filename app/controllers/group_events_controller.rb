@@ -1,13 +1,8 @@
 class GroupEventsController < ApplicationController
   # GET /group_events
   def index
-    @group_events = GroupEvent.active.all
-    render :json => JSON.pretty_generate(@group_events.as_json), :status => 200
-  end
-
-  # GET /group_events/published
-  def published
-    @group_events = GroupEvent.published_active.all
+    @group_events = GroupEvent.active
+    @group_events = @group_events.published if params[:published]
     render :json => JSON.pretty_generate(@group_events.as_json), :status => 200
   end
 

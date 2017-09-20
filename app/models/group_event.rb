@@ -8,10 +8,9 @@ class GroupEvent < ApplicationRecord
   scope :published, -> { where(:state => "published") }
   scope :active, -> { where(:deleted => nil) }
 
-  class << self
-    def published_active
-      active.published
-    end
+  # Composed scope 
+  def self.published_active
+    active.published
   end
 
   # Override to perform soft deletes
