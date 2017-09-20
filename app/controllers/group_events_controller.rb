@@ -1,22 +1,37 @@
 class GroupEventsController < ApplicationController
   # GET /group_events
   def index
-    @group_events = GroupEvent.all
+    @group_events = GroupEvent.active.all
     render :json => JSON.pretty_generate(@group_events.as_json), :status => 200
+  end
+
+  def published
+    debugger
+    @group_event = GroupEvent.published.all
+    @group_event.publish_event
   end
 
   # POST /group_events
   def create
     @group_event = GroupEvent.new(group_event_params)
-    @group_event.save
-    render :json => @group_event, :status => 201
+    @group_event.update_duration
+    if @group_event.save
+      render :json => @group_event, :status => 201
+    else
+      render json:{ "message": @group_event.errors.messages }, :status => 400
+    end
+  end
+
+  def publish
+    @group_event = GroupEvent.find(params[:id])
+    @group_event.publish_event
   end
 
   # GET /group_events/:id
   def show
-    @group_event = GroupEvent.find(params[:id])
+    @group_event = GroupEvent.active.find(params[:id])
     if @group_event
-      render json: @group_event, :status => 200
+      render :json => JSON.pretty_generate(@group_event.as_json), :status => 200
     else
       render json: {"message": "Event not found"}, :status => 404
     end

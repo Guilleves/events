@@ -6,20 +6,23 @@ class GroupEvent < ApplicationRecord
   validate :dates_must_be_valid, :state_must_be_draft_or_published
   after_save :update_duration
   # scope :published, where(state: "published")
+  scope :active, -> { where(:deleted => nil) }
 
   # Override to perform soft deletes
   def delete
-     self.update_attribute(:deleted, 1)
+    d = DateTime.now.strftime('%Y-%m-%d %H:%M:%S')
+    self.update_attribute(:deleted, d)
   end
 
   # Validates all attributes before publishing
   def no_nil_attributes
-    GroupEvent.attribute_names.each do |a|
+    GroupEvent.attribute_names.without("deleted").each do |a|
       if self[:"#{a}"].blank?
         errors.add(:base, "All fields are required to publish an event")
         return false
       end
     end
+    return true
   end
 
   def state_must_be_draft_or_published
@@ -31,9 +34,9 @@ class GroupEvent < ApplicationRecord
     end
   end
 
-  def publish
+  def publish_event
     if no_nil_attributes
-      state = "published"
+      self.state = "published"
       self.save!
     else
       raise PublishingError, 'All fields are required to publish an event'

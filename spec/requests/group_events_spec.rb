@@ -68,12 +68,12 @@ RSpec.describe 'Group events API', type: :request do
     end
 
     context 'when the request is invalid' do
-      before { post '/group_events', params: {group_event: { state: "draft" } } }
+      before { post '/group_events', params: {group_event: { date_to: Date.today - 3, date_from: Date.today } } }
       subject { JSON.parse(response.body) }
 
-      # it "doesn't save the invalid attributes" do
-      #   expect(subject['duration']).to eq nil
-      # end
+      it "the event is not saved" do
+        expect(response).to have_http_status(400)
+      end
     end
   end
 
@@ -90,6 +90,10 @@ RSpec.describe 'Group events API', type: :request do
 
       it 'returns status code 204' do
         expect(response).to have_http_status(204)
+      end
+
+      it 'saves the new attributes into the record' do
+        expect(GroupEvent.find(group_event_id)[:name]).to eq "Shopping"
       end
     end
   end
