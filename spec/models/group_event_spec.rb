@@ -10,6 +10,7 @@ RSpec.describe GroupEvent, type: :model do
     it "is a positive integer" do
       expect(subject).to be_an(Integer)
     end
+
     context "when it has identical start and end dates" do
       let!(:event) { create :group_event, date_from: Date.today, date_to: Date.today}
 
@@ -26,6 +27,7 @@ RSpec.describe GroupEvent, type: :model do
       expect(states).to include(group_event[:state])
     end
   end
+  
   context "when is published", focus: true do
 
     it "it has no blank attributes" do
