@@ -20,11 +20,12 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'factory_girl_rails'
 end
 
 group :test do
-  gem 'factory_girl_rails', :require => false
   gem 'faker', :git => 'git://github.com/stympy/faker.git', :branch => 'master'
+  gem 'cucumber'
   gem 'cucumber-rails', :require => false
   gem 'database_cleaner'
 end

@@ -187,6 +187,7 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
+  cucumber
   cucumber-rails
   database_cleaner
   factory_girl_rails
