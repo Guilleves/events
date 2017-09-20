@@ -45,7 +45,7 @@ class GroupEvent < ApplicationRecord
       self.state = "published"
       self.save!
     else
-      raise PublishingError, 'All fields are required to publish an event'
+      return false
     end
   end
 

@@ -5,6 +5,7 @@ class GroupEventsController < ApplicationController
     render :json => JSON.pretty_generate(@group_events.as_json), :status => 200
   end
 
+  # GET /group_events/published
   def published
     @group_events = GroupEvent.published_active.all
     render :json => JSON.pretty_generate(@group_events.as_json), :status => 200
@@ -16,15 +17,6 @@ class GroupEventsController < ApplicationController
     @group_event.update_duration
     if @group_event.save
       render :json => @group_event, :status => 201
-    else
-      render json:{ "message": @group_event.errors.messages }, :status => 400
-    end
-  end
-
-  def publish
-    @group_event = GroupEvent.find(params[:id])
-    if @group_event.publish_event
-      redirect_to  action: "show", id: params[:id], :status => 204
     else
       render json:{ "message": @group_event.errors.messages }, :status => 400
     end
@@ -46,6 +38,16 @@ class GroupEventsController < ApplicationController
     @group_event.update_attributes(group_event_params)
     @group_event.save
     render :json => @group_event, :status => 204
+  end
+
+  # PATCH /group_events/:id/publish
+  def publish
+    @group_event = GroupEvent.find(params[:id])
+    if @group_event.publish_event
+      redirect_to  action: "show", id: params[:id], :status => 204
+    else
+      render json:{ "message": @group_event.errors.messages }, :status => 400
+    end
   end
 
   # DELETE /group_events/:id

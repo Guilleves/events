@@ -34,20 +34,29 @@ RSpec.describe 'Group events API', type: :request do
         expect(response).to have_http_status(200)
       end
     end
+  end
 
-    # context 'when the record does not exist' do
-    #   let(:group_event_id) { 'non_existent_id' }
-    #
-    #   it 'returns status code 404' do
-    #     debugger
-    #     expect(response).to have_http_status(404)
-    #   end
-    #
-    #   it 'returns a not found message' do
-    #     debugger
-    #     expect(response.body.message).to match(/Event not found/)
-    #   end
-    # end
+  # Test suite for GET /group_events/published
+  describe 'GET /group_events/published' do
+    before do
+      patch "/group_events/#{group_event_id}/publish"
+      get "/group_events/published"
+    end
+    subject { JSON.parse(response.body) }
+
+    it 'returns published group events' do
+      expect(subject).not_to be_empty
+      expect(subject.size).to eq(1)
+    end
+    it 'returns status code 200' do
+      expect(response).to have_http_status(200)
+    end
+    it 'event has a published state' do
+      expect(GroupEvent.find(group_event_id)[:state]).to eq "published"
+    end
+    it "returns 1 event" do
+      expect(GroupEvent.published_active.all.count).to eq 1
+    end
   end
 
   # Test suite for POST /group_events
@@ -98,6 +107,39 @@ RSpec.describe 'Group events API', type: :request do
     end
   end
 
+  # Test suite for PATCH /group_events/:id/publish
+  describe 'PATCH /group_events/:id/publish', focus: true do
+    context 'when the event fields are complete' do
+      before { patch "/group_events/#{group_event_id}/publish" }
+
+      it 'updates the record' do
+        expect(response.body).to be_empty
+      end
+
+      it 'returns status code 204' do
+        expect(response).to have_http_status(204)
+      end
+
+      it 'publishes the event' do
+        expect(GroupEvent.find(group_event_id)[:state]).to eq "published"
+      end
+    end
+
+    context "when the event's fields are incomplete" do
+      let!(:incomplete_group_event) { create :group_event, name: nil }
+      let(:incomplete_id) { incomplete_group_event.id }
+      before { patch "/group_events/#{incomplete_id}/publish" }
+
+      it 'returns status code 400' do
+        expect(response).to have_http_status(400)
+      end
+
+      it 'does not publish the event' do
+        expect(GroupEvent.find(group_event_id)[:state]).to eq "draft"
+      end
+    end
+  end
+
   # Test suite for DELETE /group_events/:id
   describe 'DELETE /group_events/:id' do
     before { delete "/group_events/#{group_event_id}" }
@@ -108,6 +150,10 @@ RSpec.describe 'Group events API', type: :request do
     it "the record still exists and deleted is not nil" do
       ge = GroupEvent.find(group_event_id)
       expect(ge[:deleted]).not_to be nil
+    end
+    it "the records are hidden in the scope" do
+      expect(GroupEvent.active.count).to eq 2
+      expect(GroupEvent.count).to eq 3
     end
   end
 end

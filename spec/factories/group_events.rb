@@ -11,5 +11,6 @@ FactoryGirl.define do
         address: Faker::Address.street_address
       }
     )
+    after(:create) { |event| event.update_duration; event.save! }
   end
 end
