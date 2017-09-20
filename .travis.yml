@@ -9,14 +9,6 @@ before_install:
 services:
   - postgresql
 
-test:
-  adapter: postgresql
-  database: group_events_test
-
 before_script:
   - psql -c "CREATE DATABASE group_events_test;" -U postgres
   - psql -c "CREATE USER guille WITH PASSWORD 'root';" -U postgres
-
-script:
-  - rake db:test:prepare
-  - rake db:migrate
