@@ -14,6 +14,7 @@ RSpec.describe 'Group events API', type: :request do
       expect(subject).not_to be_empty
       expect(subject.size).to eq(3)
     end
+
     it 'returns status code 200' do
       expect(response).to have_http_status(200)
     end
@@ -48,12 +49,15 @@ RSpec.describe 'Group events API', type: :request do
       expect(subject).not_to be_empty
       expect(subject.size).to eq(1)
     end
+
     it 'returns status code 200' do
       expect(response).to have_http_status(200)
     end
+
     it 'event has a published state' do
       expect(GroupEvent.find(group_event_id)[:state]).to eq "published"
     end
+
     it "returns 1 event" do
       expect(GroupEvent.published_active.all.count).to eq 1
     end
@@ -147,10 +151,12 @@ RSpec.describe 'Group events API', type: :request do
     it 'returns status code 204 (performs soft delete)' do
       expect(response).to have_http_status(204)
     end
+
     it "the record still exists and deleted is not nil" do
       ge = GroupEvent.find(group_event_id)
       expect(ge[:deleted]).not_to be nil
     end
+    
     it "the records are hidden in the scope" do
       expect(GroupEvent.active.count).to eq 2
       expect(GroupEvent.count).to eq 3

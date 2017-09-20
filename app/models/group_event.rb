@@ -24,6 +24,7 @@ class GroupEvent < ApplicationRecord
   def no_nil_attributes
     GroupEvent.attribute_names.without("deleted").each do |a|
       if self[:"#{a}"].blank?
+        debugger
         errors.add(:base, "All fields are required to publish an event")
         return false
       end
@@ -50,7 +51,11 @@ class GroupEvent < ApplicationRecord
   end
 
   def update_duration
-    self[:duration] = (date_to - date_from).to_i if date_to && date_from
+    self[:duration] = round_to_one((date_to - date_from).to_i) if (date_to && date_from).present?
+  end
+
+  def round_to_one(value)
+    value.zero? ? 1 : value
   end
 
   def dates_must_be_valid
