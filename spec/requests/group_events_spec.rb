@@ -54,7 +54,7 @@ RSpec.describe 'Group events API', type: :request do
       expect(response).to have_http_status(200)
     end
 
-    it 'event has a published state' do
+    it 'has a published state' do
       expect(GroupEvent.find(group_event_id)[:state]).to eq "published"
     end
 
@@ -93,6 +93,7 @@ RSpec.describe 'Group events API', type: :request do
   # Test suite for PUT /group_events/:id
   describe 'PUT /group_events/:id' do
     let(:valid_attributes) { { group_event: { name: 'Shopping' } } }
+    let!(:event_duration) { GroupEvent.find(group_event_id)[:duration] }
 
     context 'when the record exists' do
       before { put "/group_events/#{group_event_id}", params: valid_attributes }
@@ -107,6 +108,16 @@ RSpec.describe 'Group events API', type: :request do
 
       it 'saves the new attributes into the record' do
         expect(GroupEvent.find(group_event_id)[:name]).to eq "Shopping"
+      end
+
+      describe 'modify the dates' do
+        let(:valid_attributes) { { group_event: { date_from: Date.today - 3.days } } }
+        before { put "/group_events/#{group_event_id}", params: valid_attributes }
+        subject { GroupEvent.find(group_event_id) }
+
+        it "updates the duration" do
+          expect(subject[:duration]).to eq (event_duration + 3)
+        end
       end
     end
   end
@@ -156,7 +167,7 @@ RSpec.describe 'Group events API', type: :request do
       ge = GroupEvent.find(group_event_id)
       expect(ge[:deleted]).not_to be nil
     end
-    
+
     it "the records are hidden in the scope" do
       expect(GroupEvent.active.count).to eq 2
       expect(GroupEvent.count).to eq 3

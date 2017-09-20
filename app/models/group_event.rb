@@ -24,7 +24,6 @@ class GroupEvent < ApplicationRecord
   def no_nil_attributes
     GroupEvent.attribute_names.without("deleted").each do |a|
       if self[:"#{a}"].blank?
-        debugger
         errors.add(:base, "All fields are required to publish an event")
         return false
       end
