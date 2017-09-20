@@ -44,7 +44,7 @@ RSpec.describe 'Group events API', type: :request do
     before { get "/group_events/#{group_event_id}" }
     subject { JSON.parse(response.body) }
 
-    context 'when the record exists' do
+    context 'when the event exists' do
       it 'returns the group_event' do
         expect(subject).not_to be_empty
         expect(subject['id']).to eq(group_event_id)
@@ -62,6 +62,18 @@ RSpec.describe 'Group events API', type: :request do
         it 'has a published state' do
           expect(GroupEvent.find(group_event_id)[:state]).to eq "published"
         end
+      end
+    end
+
+    context 'when the event does not exist' do
+      let(:group_event_id) { 'non_existant_event' }
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status(404)
+      end
+
+      it 'returns a not found message' do
+        expect(response.body).to match(/Event not found/)
       end
     end
   end
@@ -98,10 +110,10 @@ RSpec.describe 'Group events API', type: :request do
     let(:valid_attributes) { { group_event: { name: 'Shopping' } } }
     let!(:event_duration) { GroupEvent.find(group_event_id)[:duration] }
 
-    context 'when the record exists' do
+    context 'when the event exists' do
       before { put "/group_events/#{group_event_id}", params: valid_attributes }
 
-      it 'updates the record' do
+      it 'updates the event' do
         expect(response.body).to be_empty
       end
 
@@ -109,7 +121,7 @@ RSpec.describe 'Group events API', type: :request do
         expect(response).to have_http_status(204)
       end
 
-      it 'saves the new attributes into the record' do
+      it 'saves the new attributes into the event' do
         expect(GroupEvent.find(group_event_id)[:name]).to eq "Shopping"
       end
 
@@ -130,7 +142,7 @@ RSpec.describe 'Group events API', type: :request do
     context 'when the event fields are complete' do
       before { patch "/group_events/#{group_event_id}/publish" }
 
-      it 'updates the record' do
+      it 'updates the event' do
         expect(response.body).to be_empty
       end
 
@@ -166,12 +178,12 @@ RSpec.describe 'Group events API', type: :request do
       expect(response).to have_http_status(204)
     end
 
-    it "the record still exists and deleted is not nil" do
+    it "the event still exists and deleted is not nil" do
       ge = GroupEvent.find(group_event_id)
       expect(ge[:deleted]).not_to be nil
     end
 
-    it "the records are hidden in the scope" do
+    it "the events are hidden in the scope" do
       expect(GroupEvent.active.count).to eq 2
       expect(GroupEvent.count).to eq 3
     end

@@ -1,4 +1,5 @@
 class GroupEventsController < ApplicationController
+rescue_from ActiveRecord::RecordNotFound, with: :event_not_found
   # GET /group_events
   def index
     @group_events = GroupEvent.active
@@ -20,11 +21,7 @@ class GroupEventsController < ApplicationController
   # GET /group_events/:id
   def show
     @group_event = GroupEvent.active.find(params[:id])
-    if @group_event
-      render :json => JSON.pretty_generate(@group_event.as_json), :status => 200
-    else
-      render json: {"message": "Event not found"}, :status => 404
-    end
+    render :json => JSON.pretty_generate(@group_event.as_json), :status => 200
   end
 
   # PUT /group_events/:id
@@ -60,4 +57,7 @@ class GroupEventsController < ApplicationController
       params.require(:group_event).permit(:name, :description, :date_from, :date_to, :duration, location: [ :city, :zip_code, :address ])
     end
 
+    def event_not_found
+      render json: {"message": "Event not found"}, :status => 404
+    end
 end
