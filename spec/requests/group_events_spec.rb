@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'byebug'
 
 RSpec.describe 'Group events API', type: :request do
   let!(:group_events) { create_list(:group_event, 3) }
@@ -70,9 +71,9 @@ RSpec.describe 'Group events API', type: :request do
       before { post '/group_events', params: {group_event: { state: "draft" } } }
       subject { JSON.parse(response.body) }
 
-      it "doesn't save the invalid attributes" do
-        expect(subject['state']).to eq nil
-      end
+      # it "doesn't save the invalid attributes" do
+      #   expect(subject['duration']).to eq nil
+      # end
     end
   end
 
@@ -97,8 +98,12 @@ RSpec.describe 'Group events API', type: :request do
   describe 'DELETE /group_events/:id' do
     before { delete "/group_events/#{group_event_id}" }
 
-    it 'returns status code 204' do
+    it 'returns status code 204 (performs soft delete)' do
       expect(response).to have_http_status(204)
+    end
+    it "the record still exists and has deleted: true" do
+      ge = GroupEvent.find(group_event_id)
+      expect(ge[:deleted]).to eq true
     end
   end
 end

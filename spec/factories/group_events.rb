@@ -2,8 +2,8 @@ FactoryGirl.define do
   factory :group_event do
     name Faker::Hipster.sentence
     description Faker::Hipster.paragraph
-    date_from Time.now
-    date_to Faker::Time.forward(23, :morning)
+    date_from Date.today
+    date_to Faker::Date.forward(23)
     location(
       {
         city: Faker::Address.city,

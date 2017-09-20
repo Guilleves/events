@@ -1,10 +1,16 @@
 class GroupEvent < ApplicationRecord
   include ActiveModel::AttributeAssignment
   @@states = [ "draft", "published" ]
+
   attribute :state, :string, default: "draft"
   validate :dates_must_be_valid, :state_must_be_draft_or_published
   after_save :update_duration
-  scope :published, { where(state: "published") }
+  # scope :published, where(state: "published")
+
+  # Override to perform soft deletes
+  def delete
+     self.update_attribute(:deleted, 1)
+  end
 
   # Validates all attributes before publishing
   def no_nil_attributes
@@ -35,7 +41,7 @@ class GroupEvent < ApplicationRecord
   end
 
   def update_duration
-    self[:duration] = (date_to - date_from).to_i
+    self[:duration] = (date_to - date_from).to_i if date_to && date_from
   end
 
   def dates_must_be_valid

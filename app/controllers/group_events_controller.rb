@@ -33,8 +33,10 @@ class GroupEventsController < ApplicationController
   # DELETE /group_events/:id
   def destroy
     @group_event = GroupEvent.find(params[:id])
-    if @group_event.destroy
+    if @group_event.delete
       render json: {"message": "Deleted successfully"}, :status => 204
+    else
+      render json: {"message": "Delete failed, event not found"}, :status => 404
     end
   end
 
