@@ -18,6 +18,25 @@ RSpec.describe 'Group events API', type: :request do
     it 'returns status code 200' do
       expect(response).to have_http_status(200)
     end
+
+    describe "there are published events" do
+      before { patch "/group_events/#{group_event_id}/publish" }
+      before { get "/group_events?published=true" }
+      subject { JSON.parse(response.body) }
+
+      it 'returns published group events' do
+        expect(subject).not_to be_empty
+        expect(subject.size).to eq(1)
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it "returns 1 event" do
+        expect(GroupEvent.published_active.all.count).to eq 1
+      end
+    end
   end
 
   # Test suite for GET /group_events/:id
@@ -40,21 +59,8 @@ RSpec.describe 'Group events API', type: :request do
         before { get "/group_events?published=true" }
         subject { JSON.parse(response.body) }
 
-        it 'returns published group events' do
-          expect(subject).not_to be_empty
-          expect(subject.size).to eq(1)
-        end
-
-        it 'returns status code 200' do
-          expect(response).to have_http_status(200)
-        end
-
         it 'has a published state' do
           expect(GroupEvent.find(group_event_id)[:state]).to eq "published"
-        end
-
-        it "returns 1 event" do
-          expect(GroupEvent.published_active.all.count).to eq 1
         end
       end
     end
