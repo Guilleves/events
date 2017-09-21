@@ -49,6 +49,7 @@ class GroupEvent < ApplicationRecord
   end
 
   def update_duration
+    self[:duration] = nil if (date_from.blank? || date_to.blank?)
     self[:duration] = round_to_one((date_to - date_from).to_i) if (date_to && date_from).present?
   end
 
@@ -57,24 +58,17 @@ class GroupEvent < ApplicationRecord
   end
 
   def dates_must_be_valid
-    if date_from && date_to
-      if date_from > date_to
-        errors.add(:base, "Start date must be previous to End date")
-        return false
-      else return true
-      end
-    else return true
-    end
+    return true if !(date_from && date_to)
+    return true if date_from <= date_to
+    errors.add(:base, "Start date must be previous to End date")
+    return false
   end
 
   def date_from_cant_be_past
     return true if date_from.blank?
-    if date_from >= Date.today
-      return true
-    else
-      errors.add(:date_from, "Start date can't be in the past")
-      return false
-    end
+    return true if date_from >= Date.today
+    errors.add(:date_from, "Start date can't be in the past")
+    return false
   end
 end
 

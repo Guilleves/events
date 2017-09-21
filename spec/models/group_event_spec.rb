@@ -18,6 +18,16 @@ RSpec.describe GroupEvent, type: :model do
         expect(event.duration).to eq 1
       end
     end
+
+    context "when any date is deleted" do
+      before do
+        group_event.update_attribute(:date_from, nil)
+      end
+
+      it "is nil" do
+        expect(group_event.duration).to eq nil
+      end
+    end
   end
 
   describe "state" do
@@ -27,7 +37,7 @@ RSpec.describe GroupEvent, type: :model do
       expect(states).to include(group_event[:state])
     end
   end
-  
+
   context "when is published", focus: true do
 
     it "it has no blank attributes" do
