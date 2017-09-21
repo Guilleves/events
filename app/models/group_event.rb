@@ -49,7 +49,7 @@ class GroupEvent < ApplicationRecord
   end
 
   def update_duration
-    self[:duration] = nil if (date_from.blank? || date_to.blank?)
+    self[:duration] = nil if [date_from, date_to].any? { |a| a.blank? }
     self[:duration] = round_to_one((date_to - date_from).to_i) if (date_to && date_from).present?
   end
 
