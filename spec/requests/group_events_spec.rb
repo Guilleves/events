@@ -126,12 +126,21 @@ RSpec.describe 'Group events API', type: :request do
       end
 
       describe 'modify the dates' do
-        let(:valid_attributes) { { group_event: { date_from: Date.today - 3.days } } }
+        let(:valid_attributes) { { group_event: { date_to: Date.today + 5.days } } }
         before { put "/group_events/#{group_event_id}", params: valid_attributes }
         subject { GroupEvent.find(group_event_id) }
 
         it "updates the duration" do
-          expect(subject[:duration]).to eq (event_duration + 3)
+          expect(subject[:duration]).to eq (5)
+        end
+      end
+
+      context 'when the request is invalid' do
+        before { put "/group_events/#{group_event_id}", params: {group_event: { date_from: Date.today - 3.days } } }
+        subject { JSON.parse(response.body) }
+
+        it "the event is not saved" do
+          expect(response).to have_http_status(400)
         end
       end
     end

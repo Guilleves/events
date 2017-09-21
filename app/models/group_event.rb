@@ -3,12 +3,12 @@ class GroupEvent < ApplicationRecord
   @@states = [ "draft", "published" ]
 
   attribute :state, :string, default: "draft"
-  validate :dates_must_be_valid, :state_must_be_draft_or_published
+  validate :dates_must_be_valid, :date_from_cant_be_past, :state_must_be_draft_or_published
   after_save :update_duration
   scope :published, -> { where(:state => "published") }
   scope :active, -> { where(:deleted => nil) }
 
-  # Composed scope 
+  # Composed scope
   def self.published_active
     active.published
   end
@@ -22,7 +22,7 @@ class GroupEvent < ApplicationRecord
   # Validates all attributes before publishing
   def no_nil_attributes
     GroupEvent.attribute_names.without("deleted").each do |a|
-      if self[:"#{a}"].blank?
+      if self.send(a).blank?
         errors.add(:base, "All fields are required to publish an event")
         return false
       end
@@ -64,6 +64,16 @@ class GroupEvent < ApplicationRecord
       else return true
       end
     else return true
+    end
+  end
+
+  def date_from_cant_be_past
+    return true if date_from.blank?
+    if date_from >= Date.today
+      return true
+    else
+      errors.add(:date_from, "Start date can't be in the past")
+      return false
     end
   end
 end

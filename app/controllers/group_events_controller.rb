@@ -28,8 +28,11 @@ rescue_from ActiveRecord::RecordNotFound, with: :event_not_found
   def update
     @group_event = GroupEvent.find(params[:id])
     @group_event.update_attributes(group_event_params)
-    @group_event.save
-    render :json => @group_event, :status => 204
+    if @group_event.save
+      render :json => @group_event, :status => 204
+    else
+      render json: { "message": @group_event.errors.messages }, :status => 400    
+    end
   end
 
   # PATCH /group_events/:id/publish
